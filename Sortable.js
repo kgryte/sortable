@@ -418,33 +418,47 @@
 		};
 	}
 
+	/**
+	* FUNCTION: _closest( el, selector, ctx )
+	*	Finds the closest DOMElement specified as draggable.
+	*
+	* @param {DOMElement} el - DOM element
+	* @param {string} selector - CSS class selector; e.g., .item or li.item
+	* @param {DOMElement} ctx - context of the element event
+	* @returns {DOMElement} if no element is found, returns null
+	*/
+	function _closest( el, selector, ctx ){
+		var className;
 
-	function _closest(el, selector, ctx){
-		if( selector === '*' ){
+		if ( "*" === selector ) {
 			return el;
 		}
-		else if( el ){
-			ctx = ctx || document;
-			selector = selector.split('.');
 
-			var
-				  tag = selector.shift().toUpperCase()
-				, re = new RegExp('\\s('+selector.join('|')+')\\s', 'g')
-			;
+        if ( el ) {
 
-			do {
-				if(
-					   (tag === '' || el.nodeName == tag)
-					&& (!selector.length || ((' '+el.className+' ').match(re) || []).length == selector.length)
-				){
-					return	el;
-				}
-			}
-			while( el !== ctx && (el = el.parentNode) );
-		}
+            ctx = ctx || y, selector = selector.split(".");
 
-		return	null;
-	}
+            var tag = selector.shift().toUpperCase(),
+                re = new RegExp("\\s(" + selector.join("|") + ")\\s", "g");
+
+            do {
+
+            	// SVG Hack:
+            	className = el.className;
+
+            	if ( className.hasOwnProperty && className.hasOwnProperty( 'baseVal' ) ) {
+            		className = className.baseVal;
+            	}
+
+                if (!("" !== tag && el.nodeName != tag || selector.length && ((" " + className + " ").match(re) || []).length != selector.length)) {
+                    return el;
+                }
+            } while (el !== ctx && (el = el.parentNode));
+        }
+
+        return null;
+
+	} // end FUNCTION _closest()
 
 
 	function _globalDragOver(evt){
